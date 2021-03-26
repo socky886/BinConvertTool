@@ -8,12 +8,12 @@
 #pragma pack(1)
 typedef struct
 {
-	char hw_num[3];
-	unsigned char fw_num[3];
+	char hw_num[4];
+	unsigned char fw_num[4];
 	uint32_t fw_size;
 	uint32_t fw_crc;
 	uint32_t header_crc;
-	char memo[6];
+	char memo[4];
 }bin_header_t;
 typedef union 
 {

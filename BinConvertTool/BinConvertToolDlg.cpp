@@ -313,25 +313,25 @@ void CBinConvertToolDlg::OnBnClickedBtnGenBinIncludeHead()
 	}
 	// temp.Format("the file size is %d",size);
 	// AfxMessageBox(temp);
-
+	
+    // adjust to 64 bytes
+	size1 = size;
+	size1+=63;
+	size1>>=6;
+	size1<<=6;
 	m_BinHeader.header.fw_size=(uint32_t)size; //fill the header with bin size
 
 	// adjust 4 bytes
-	size1 = size;
-	// size1 += 3;
-	size1 >>= 2;
-	size1 <<= 2;
-	// size1=size1/4;
-	// size1=size1*4;
-	temp.Format("size1 is %d",size1);
+	
+	temp.Format("size1 is %d",size);
 	AfxMessageBox(temp);
 
 	// temp.Format("the file size is %d",size1);
 	// AfxMessageBox(temp);
-	buf=(uint8_t *)malloc(size);
-	memset(buf, 0, size);
+	buf=(uint8_t *)malloc(size1);
+	memset(buf, 0x00, size1);
 	read_bin(filename,buf,size);
-	crc1=CalcCRC32(buf,0,size1,0xffffffff); //get the crc of the bin file
+	crc1=CalcCRC32(buf,0,size,0xffffffff); //get the crc of the bin file
 	// crc1=CalcCRC32(buf,0,34624,0xffffffff); //get the crc of the bin file
 	
     m_BinHeader.header.fw_crc=crc1;
@@ -340,14 +340,8 @@ void CBinConvertToolDlg::OnBnClickedBtnGenBinIncludeHead()
 	m_Body_CRC=temp;
 	AfxMessageBox(temp);
 
-	
 
-
-
-
-
-
-	crc2=CalcCRC32(m_BinHeader.temp,0,14,0xffffffff); // get the crc of the header
+	crc2=CalcCRC32(m_BinHeader.temp,0,16,0xffffffff); // get the crc of the header
 	m_BinHeader.header.header_crc = crc2;  // fill the header crc 
 	temp.Format("%08x",crc2);
 	m_Header_CRC=temp;
@@ -526,7 +520,9 @@ uint32_t CalcCRC32(uint8_t *ptr, uint32_t startIndex, uint32_t len,int32_t seed)
     {
         xbit = 1u << 31;
 
+
         data = (ptr[i + 3]) | (ptr[i + 2] << 8) | (ptr[i + 1] << 16) | (ptr[i] << 24);
+
         for (bits = 0; bits < 32; bits++)
         {
             if ((crc & 0x80000000) != 0)
@@ -789,24 +785,25 @@ void CBinConvertToolDlg::OnBnClickedButtonTogether()
 	// AfxMessageBox(temp);
 
 	// adjust to 64 bytes
-	size+=63;
-	size>>=6;
-	size<<=6;
+	size1 = size;
+	size1+=63;
+	size1>>=6;
+	size1<<=6;
 
-	m_BinHeader.header.fw_size=(uint32_t)size; //fill the header with bin size
+	m_BinHeader.header.fw_size=(uint32_t)size1; //fill the header with bin size
 
 	// adjust 4 bytes
-	size1 = size;
-	size1 >>= 2;
-	size1 <<= 2;
+	// size1 = size;
+	// size1 >>= 2;
+	// size1 <<= 2;
 	temp.Format("size1 is %d",size1);
 	AfxMessageBox(temp);
 
     // step 4: get the bin 
 	// temp.Format("the file size is %d",size1);
 	// AfxMessageBox(temp);
-	buf=(uint8_t *)malloc(size);
-	memset(buf, 0, size);
+	buf=(uint8_t *)malloc(size1);
+	memset(buf, 0xff, size1);
 	read_bin(filename,buf,size);
 
 	// step 5: get the crc32 of the bin
@@ -818,7 +815,7 @@ void CBinConvertToolDlg::OnBnClickedButtonTogether()
 	AfxMessageBox(temp);
 
 	// step 6: get the crc32 of the header
-	crc2=CalcCRC32(m_BinHeader.temp,0,14,0xffffffff); // get the crc of the header
+	crc2=CalcCRC32(m_BinHeader.temp,0,16,0xffffffff); // get the crc of the header
 	m_BinHeader.header.header_crc = crc2;  // fill the header crc 
 	temp.Format("%08x",crc2);
 	m_Header_CRC=temp;
@@ -863,27 +860,28 @@ void CBinConvertToolDlg::OnBnClickedButtonTogether()
 	// AfxMessageBox(temp);
 
     // adjust to 64 bytes
-	size2+=63;
-	size2>>=6;
-	size2<<=6;
+	size12 = size2;
+	size12+=63;
+	size12>>=6;
+	size12<<=6;
 	m_BinHeader2.header.fw_size=(uint32_t)size2; //fill the header with bin size
 
 	// adjust 4 bytes
-	size12 = size2;
-	size12 >>= 2;
-	size12 <<= 2;
-	temp.Format("size1 is %d",size12);
+	// size12 = size2;
+	// size12 >>= 2;
+	// size12 <<= 2;
+	temp.Format("size1 is %d",size2);
 	AfxMessageBox(temp);
 
     // step 4: get the bin 
 	// temp.Format("the file size is %d",size1);
 	// AfxMessageBox(temp);
-	buf2=(uint8_t *)malloc(size2);
-	memset(buf2, 0, size2);
+	buf2=(uint8_t *)malloc(size12);
+	memset(buf2,0xff, size12);
 	read_bin(filename,buf2,size2);
 
 	// step 5: get the crc32 of the bin
-	crc1=CalcCRC32(buf2,0,size12,0xffffffff); //get the crc of the bin file
+	crc1=CalcCRC32(buf2,0,size2,0xffffffff); //get the crc of the bin file
     m_BinHeader2.header.fw_crc=crc1;
 	//m_Body_CRC.Format("%08X",crc1);
 	temp.Format("%08x",crc1);
@@ -891,7 +889,7 @@ void CBinConvertToolDlg::OnBnClickedButtonTogether()
 	AfxMessageBox(temp);
 
 	// step 6: get the crc32 of the header
-	crc2=CalcCRC32(m_BinHeader2.temp,0,14,0xffffffff); // get the crc of the header
+	crc2=CalcCRC32(m_BinHeader2.temp,0,16,0xffffffff); // get the crc of the header
 	m_BinHeader2.header.header_crc = crc2;  // fill the header crc 
 	temp.Format("%08x",crc2);
 	m_Header_CRC2=temp;
@@ -913,7 +911,7 @@ void CBinConvertToolDlg::OnBnClickedButtonTogether()
 	{
 		newfile.Write((void *)m_BinHeader.temp,24);
 		newfile.Write((void *)m_BinHeader2.temp,24);
-		newfile.Write((void *)buf,size);
+		newfile.Write((void *)buf,size1);
 		newfile.Write((void *)buf2,size2);
 		newfile.Close();
 	}
