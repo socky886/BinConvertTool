@@ -785,10 +785,26 @@ void CBinConvertToolDlg::OnBnClickedButtonTogether()
 	// AfxMessageBox(temp);
 
 	// adjust to 64 bytes
+	// size1 = size;
+	// size1+=63;
+	// size1>>=6;
+	// size1<<=6;
+
+	// adjust to 192 bytes
 	size1 = size;
 	size1+=63;
 	size1>>=6;
 	size1<<=6;
+
+	if (size1 % 192 == 0)
+		size1 = size1;
+	else if (size1 % 192 == 64)
+		size1 += 128;
+	else if (size1 % 192 == 128)
+		size1 += 64;
+	else
+		size1 = size1;
+	
 
 	m_BinHeader.header.fw_size=(uint32_t)size1; //fill the header with bin size
 
